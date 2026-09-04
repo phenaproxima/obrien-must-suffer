@@ -1,5 +1,5 @@
 {{ define "main" }}
-<article class="post comic-episode">
+<article class="post comic-page">
   <header class="post-header">
     <h1 class="post-title">{{ .Title }}</h1>
     <div class="post-meta">{{ .Date.Format "January 2, 2006" }}</div>
@@ -35,10 +35,10 @@
 
   <nav class="comic-nav">
     {{ with $newer }}
-      <a href="{{ .RelPermalink }}" rel="prev">← Newer episode</a>
+      <a href="{{ .RelPermalink }}" rel="prev">← Newer comic</a>
     {{ end }}
     {{ with $older }}
-      <a href="{{ .RelPermalink }}" rel="next">Older episode →</a>
+      <a href="{{ .RelPermalink }}" rel="next">Older comic →</a>
     {{ end }}
   </nav>
 </article>
