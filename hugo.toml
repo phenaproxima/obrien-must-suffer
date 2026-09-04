@@ -2,6 +2,7 @@ baseURL = 'https://obrienmustsuffer.com/'
 locale = 'en-us'
 title = "O'Brien Must Suffer!"
 theme = 'paper'
+disableKinds = ['taxonomy', 'term']
 
 [permalinks]
   comic = '/comic/:slug/'
