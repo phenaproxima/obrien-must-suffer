@@ -18,27 +18,27 @@
   </details>
   {{ end }}
 
-  {{ $pages := .CurrentSection.RegularPages.ByWeight.ByDate }}
+  {{ $pages := (where .Site.RegularPages "Type" "comic").ByDate.Reverse }}
   {{ $current := . }}
-  {{ $previous := false }}
-  {{ $next := false }}
+  {{ $newer := false }}
+  {{ $older := false }}
   {{ range $i, $page := $pages }}
     {{ if eq $page.RelPermalink $current.RelPermalink }}
       {{ if gt $i 0 }}
-        {{ $previous = index $pages (sub $i 1) }}
+        {{ $newer = index $pages (sub $i 1) }}
       {{ end }}
       {{ if lt (add $i 1) (len $pages) }}
-        {{ $next = index $pages (add $i 1) }}
+        {{ $older = index $pages (add $i 1) }}
       {{ end }}
     {{ end }}
   {{ end }}
 
   <nav class="comic-nav">
-    {{ with $previous }}
-      <a href="{{ .RelPermalink }}" rel="prev">← Previous episode</a>
+    {{ with $newer }}
+      <a href="{{ .RelPermalink }}" rel="prev">← Newer episode</a>
     {{ end }}
-    {{ with $next }}
-      <a href="{{ .RelPermalink }}" rel="next">Next episode →</a>
+    {{ with $older }}
+      <a href="{{ .RelPermalink }}" rel="next">Older episode →</a>
     {{ end }}
   </nav>
 </article>

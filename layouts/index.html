@@ -8,11 +8,26 @@
     <div class="post-content">{{ . }}</div>
   {{ end }}
 
-  {{ $comics := where .Site.RegularPages "Section" "comic" }}
+  {{ $comics := (where .Site.RegularPages "Type" "comic").ByDate.Reverse }}
   {{ if gt (len $comics) 0 }}
-    {{ $latest := index ($comics.ByDate.Reverse) 0 }}
-    <p><a href="{{ $latest.RelPermalink }}"><strong>Read the latest episode:</strong> {{ $latest.Title }}</a></p>
-    <p><a href="{{ "/comic/" | relURL }}">Browse the full archive</a></p>
+    {{ $paginator := .Paginate $comics 10 }}
+    <ol>
+      {{ range $paginator.Pages }}
+        <li>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          <small>({{ .Date.Format "2006-01-02" }})</small>
+        </li>
+      {{ end }}
+    </ol>
+
+    <nav class="comic-nav">
+      {{ if $paginator.HasPrev }}
+        <a href="{{ $paginator.Prev.URL }}" rel="prev">← Newer page</a>
+      {{ end }}
+      {{ if $paginator.HasNext }}
+        <a href="{{ $paginator.Next.URL }}" rel="next">Older page →</a>
+      {{ end }}
+    </nav>
   {{ else }}
     <p>No episodes yet. Check back soon.</p>
   {{ end }}

@@ -2,10 +2,10 @@ baseURL = 'https://obrienmustsuffer.com/'
 locale = 'en-us'
 title = "O'Brien Must Suffer!"
 theme = 'paper'
-disableKinds = ['taxonomy', 'term']
+disableKinds = ['taxonomy', 'term', 'section']
 
 [permalinks]
-  comic = '/comic/:slug/'
+  comic = '/:slug/'
 
 # See https://gohugo.io/host-and-deploy/host-on-github-pages
 [caches]
