@@ -1,9 +1,0 @@
-baseURL = 'https://obrienmustsuffer.com/'
-locale = 'en-us'
-title = "O'Brien Must Suffer!"
-theme = 'paper'
-
-# See https://gohugo.io/host-and-deploy/host-on-github-pages
-[caches]
-  [caches.images]
-    dir = ":cacheDir/images"
