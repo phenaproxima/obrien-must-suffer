@@ -3,6 +3,9 @@ locale = 'en-us'
 title = "O'Brien Must Suffer!"
 theme = 'paper'
 
+[permalinks]
+  comic = '/comic/:slug/'
+
 # See https://gohugo.io/host-and-deploy/host-on-github-pages
 [caches]
   [caches.images]

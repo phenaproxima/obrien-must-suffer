@@ -1,0 +1,45 @@
+{{ define "main" }}
+<article class="post comic-episode">
+  <header class="post-header">
+    <h1 class="post-title">{{ .Title }}</h1>
+    <div class="post-meta">{{ .Date.Format "January 2, 2006" }}</div>
+  </header>
+
+  {{ with .Params.image }}
+  <figure class="comic-panel">
+    <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
+  </figure>
+  {{ end }}
+
+  {{ with .Params.transcript }}
+  <details class="comic-transcript">
+    <summary>Transcript</summary>
+    <div>{{ . | markdownify }}</div>
+  </details>
+  {{ end }}
+
+  {{ $pages := .CurrentSection.RegularPages.ByWeight.ByDate }}
+  {{ $current := . }}
+  {{ $previous := false }}
+  {{ $next := false }}
+  {{ range $i, $page := $pages }}
+    {{ if eq $page.RelPermalink $current.RelPermalink }}
+      {{ if gt $i 0 }}
+        {{ $previous = index $pages (sub $i 1) }}
+      {{ end }}
+      {{ if lt (add $i 1) (len $pages) }}
+        {{ $next = index $pages (add $i 1) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  <nav class="comic-nav">
+    {{ with $previous }}
+      <a href="{{ .RelPermalink }}" rel="prev">← Previous episode</a>
+    {{ end }}
+    {{ with $next }}
+      <a href="{{ .RelPermalink }}" rel="next">Next episode →</a>
+    {{ end }}
+  </nav>
+</article>
+{{ end }}
