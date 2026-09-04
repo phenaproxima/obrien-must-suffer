@@ -1,3 +1,3 @@
-+++
-title = "O'Brien Must Suffer!"
-+++
+---
+title: "O'Brien Must Suffer!"
+---
