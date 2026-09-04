@@ -118,7 +118,6 @@ jobs:
           hugo build \
             --gc \
             --minify \
-            --baseURL "https://obrienmustsuffer.com/" \
             --cacheDir "${{ runner.temp }}/.cache/hugo"
 
       - name: Cache save
