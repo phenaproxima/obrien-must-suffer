@@ -4,6 +4,13 @@ on:
     branches:
       - main
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
+  schedule:
+    - cron: '0 * * * *'
   workflow_dispatch:
 permissions:
   contents: read
@@ -17,6 +24,7 @@ defaults:
     shell: bash
 jobs:
   build:
+    if: github.event_name != 'schedule' && !(github.event_name == 'pull_request' && github.event.action == 'closed')
     runs-on: ubuntu-latest
     env:
       # Define tool versions
@@ -116,10 +124,19 @@ jobs:
       - name: Build
         run: |
           echo "Building the project..."
-          hugo build \
-            --gc \
-            --minify \
-            --cacheDir "${{ runner.temp }}/.cache/hugo"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            PREVIEW_BASE_URL="https://cdn.jsdelivr.net/gh/${{ github.repository }}@gh-pages/previews/pr-${{ github.event.pull_request.number }}/"
+            hugo build \
+              --gc \
+              --minify \
+              --baseURL "${PREVIEW_BASE_URL}" \
+              --cacheDir "${{ runner.temp }}/.cache/hugo"
+          else
+            hugo build \
+              --gc \
+              --minify \
+              --cacheDir "${{ runner.temp }}/.cache/hugo"
+          fi
 
       - name: Cache save
         uses: actions/cache/save@v6
@@ -128,10 +145,18 @@ jobs:
           key: ${{ steps.cache-restore.outputs.cache-primary-key }}
 
       - name: Upload artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:
           include-hidden-files: false
           path: ./public
+      - name: Upload preview artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-preview-site
+          path: ./public
+          retention-days: 1
   deploy:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
@@ -144,27 +169,48 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v5
   preview:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
     runs-on: ubuntu-latest
     needs: build
     permissions:
+      contents: write
       pull-requests: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Download preview artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: pr-preview-site
+          path: ./public
+      - name: Publish preview files
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: ./public
+          target-folder: previews/pr-${{ github.event.pull_request.number }}
+          clean: false
+          commit-message: 'Update PR #${{ github.event.pull_request.number }} preview'
       - name: Add or update PR preview comment
         uses: actions/github-script@v8
         env:
           RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          ARTIFACT_NAME: github-pages
+          PREVIEW_URL: https://cdn.jsdelivr.net/gh/${{ github.repository }}@gh-pages/previews/pr-${{ github.event.pull_request.number }}/
         with:
           script: |
             const marker = '<!-- hugo-preview-comment -->'
             const body = `${marker}
-            📦 A Hugo preview build is ready for this PR.
+            🌐 A Hugo preview is published for this PR.
             
-            Download the \`${process.env.ARTIFACT_NAME}\` artifact from this run:
-            ${process.env.RUN_URL}
+            Preview URL:
+            ${process.env.PREVIEW_URL}
             
-            Unpack the artifact and open the \`public/\` output to review the rendered site.`
+            Note: preview files auto-expire about 1 hour after the latest update.
+            
+            Build run:
+            ${process.env.RUN_URL}`
             
             const { owner, repo } = context.repo
             const issue_number = context.issue.number
@@ -195,3 +241,64 @@ jobs:
                 body
               })
             }
+  cleanup_previews:
+    if: github.event_name == 'schedule' || (github.event_name == 'pull_request' && github.event.action == 'closed')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Remove expired preview folders
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
+          CLOSED_PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          
+          git fetch origin gh-pages:gh-pages || true
+          if ! git show-ref --verify --quiet refs/heads/gh-pages; then
+            echo "No gh-pages branch found. Nothing to clean."
+            exit 0
+          fi
+          
+          git checkout gh-pages
+          
+          changed=0
+          now=$(date +%s)
+          
+          if [[ "${EVENT_NAME}" == "pull_request" && "${EVENT_ACTION}" == "closed" && -n "${CLOSED_PR_NUMBER}" ]]; then
+            closed_path="previews/pr-${CLOSED_PR_NUMBER}"
+            if [[ -d "${closed_path}" ]]; then
+              rm -rf "${closed_path}"
+              echo "Removed preview for closed PR #${CLOSED_PR_NUMBER}"
+              changed=1
+            fi
+          fi
+          
+          if [[ -d previews ]]; then
+            shopt -s nullglob
+            for dir in previews/pr-*; do
+              [[ -d "${dir}" ]] || continue
+              last_update=$(git log -1 --format=%ct -- "${dir}" || echo 0)
+              age=$((now - last_update))
+              if (( age > 3600 )); then
+                rm -rf "${dir}"
+                echo "Removed expired preview ${dir} (${age}s old)"
+                changed=1
+              fi
+            done
+          fi
+          
+          if (( changed == 1 )); then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "Cleanup expired PR previews"
+            git push origin gh-pages
+          else
+            echo "No expired previews to clean."
+          fi
