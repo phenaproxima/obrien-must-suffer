@@ -6,11 +6,11 @@
   </header>
 
   {{ with .Params.image }}
-  {{ range . }}
-  {{ if not .src }}{{ errorf "Comic panel missing src: %s" $.File.Path }}{{ end }}
-  {{ if not .alt }}{{ errorf "Comic panel missing alt text: %s" $.File.Path }}{{ end }}
+  {{ range $i, $panel := . }}
+  {{ if not $panel.src }}{{ errorf "Comic panel %d missing src: %s" (add $i 1) $.File.Path }}{{ end }}
+  {{ if not $panel.alt }}{{ errorf "Comic panel %d missing alt text: %s" (add $i 1) $.File.Path }}{{ end }}
   <figure class="comic-panel">
-    <img src="{{ .src | relURL }}" alt="{{ .alt }}" loading="eager">
+    <img src="{{ $panel.src | relURL }}" alt="{{ $panel.alt }}" loading="eager">
   </figure>
   {{ end }}
   {{ end }}
