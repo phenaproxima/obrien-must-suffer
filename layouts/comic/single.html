@@ -7,6 +7,8 @@
 
   {{ with .Params.image }}
   {{ range . }}
+  {{ if not .src }}{{ errorf "Comic panel missing src: %s" $.File.Path }}{{ end }}
+  {{ if not .alt }}{{ errorf "Comic panel missing alt text: %s" $.File.Path }}{{ end }}
   <figure class="comic-panel">
     <img src="{{ .src | relURL }}" alt="{{ .alt }}" loading="eager">
   </figure>
