@@ -5,9 +5,9 @@
     <div class="post-meta">{{ .Date.Format "January 2, 2006" }}</div>
   </header>
 
-  {{ with .Params.image }}
+  {{ range .Params.image }}
   <figure class="comic-panel">
-    <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
+    <img src="{{ .src | relURL }}" alt="{{ .alt }}" loading="eager">
   </figure>
   {{ end }}
 
