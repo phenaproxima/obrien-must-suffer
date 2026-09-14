@@ -7,10 +7,11 @@
 
   {{ with .Params.image }}
   {{ if reflect.IsSlice . }}
+  {{ $singlePanel := eq (len .) 1 }}
   {{ range . }}
   <figure class="comic-panel">
     {{ if reflect.IsMap . }}
-    <img src="{{ .src | relURL }}" alt="{{ or .alt "" }}" loading="eager">
+    <img src="{{ .src | relURL }}" alt="{{- if .alt -}}{{ .alt }}{{- else if $singlePanel -}}{{ $.Params.alt | default $.Title }}{{- end -}}" loading="eager">
     {{ else }}
     <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
     {{ end }}
