@@ -8,7 +8,7 @@
   {{ with .Params.image }}
   {{ range . }}
   <figure class="comic-panel">
-    <img src="{{ (or .src .) | relURL }}" alt="{{ .alt | default $.Title }}" loading="eager">
+    <img src="{{ (or .src .) | relURL }}" alt="{{ .alt | default $.Params.alt | default $.Title }}" loading="eager">
   </figure>
   {{ end }}
   {{ end }}
