@@ -12,13 +12,13 @@
     {{ if reflect.IsMap . }}
     <img src="{{ .src | relURL }}" alt="{{ or .alt "" }}" loading="eager">
     {{ else }}
-    <img src="{{ . | relURL }}" alt="{{ or $.Params.alt "" }}" loading="eager">
+    <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
     {{ end }}
   </figure>
   {{ end }}
   {{ else }}
   <figure class="comic-panel">
-    <img src="{{ . | relURL }}" alt="{{ or $.Params.alt "" }}" loading="eager">
+    <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
   </figure>
   {{ end }}
   {{ end }}
