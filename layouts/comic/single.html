@@ -7,7 +7,6 @@
 
   {{ if not .Params.image }}{{ errorf "Comic missing image panels: %s" .File.Path }}{{ end }}
   {{ if eq (len .Params.image) 0 }}{{ errorf "Comic has no image panels: %s" .File.Path }}{{ end }}
-  {{ if not (reflect.IsMap (index .Params.image 0)) }}{{ errorf "Comic image panels must be an array of panel objects: %s" .File.Path }}{{ end }}
   {{ range $i, $panel := .Params.image }}
   {{ if not (reflect.IsMap $panel) }}{{ errorf "Comic panel %d must be an object: %s" (add $i 1) $.File.Path }}{{ end }}
   {{ if not $panel.src }}{{ errorf "Comic panel %d missing src: %s" (add $i 1) $.File.Path }}{{ end }}
