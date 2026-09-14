@@ -10,7 +10,7 @@
   {{ range . }}
   <figure class="comic-panel">
     {{ if reflect.IsMap . }}
-    <img src="{{ .src | relURL }}" alt="{{ .alt | default $.Title }}" loading="eager">
+    <img src="{{ .src | relURL }}" alt="{{ .alt | default $.Params.alt | default $.Title }}" loading="eager">
     {{ else }}
     <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
     {{ end }}
