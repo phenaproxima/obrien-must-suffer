@@ -7,15 +7,16 @@
 
   {{ $imageType := printf "%T" .Params.image }}
   {{ if not .Params.image }}{{ errorf "Comic missing image panels: %s" .File.Path }}{{ end }}
-  {{ if not (hasPrefix $imageType "[]") }}{{ errorf "Comic image panels must be an array: %s" .File.Path }}{{ end }}
+  {{ if not (reflect.IsSlice .Params.image) }}{{ errorf "Comic image panels must be an array: %s (got %s)" .File.Path $imageType }}{{ end }}
   {{ if eq (len .Params.image) 0 }}{{ errorf "Comic has no image panels: %s" .File.Path }}{{ end }}
   {{ range $i, $panel := .Params.image }}
-  {{ if not (reflect.IsMap $panel) }}{{ errorf "Comic panel %d must be an object: %s" (add $i 1) $.File.Path }}{{ end }}
+  {{ if not (reflect.IsMap $panel) }}{{ errorf "Comic panel %d must be an object: %s" (add $i 1) $.File.Path }}{{ else }}
   {{ if not $panel.src }}{{ errorf "Comic panel %d missing src: %s" (add $i 1) $.File.Path }}{{ end }}
   {{ if not $panel.alt }}{{ errorf "Comic panel %d missing alt text: %s" (add $i 1) $.File.Path }}{{ end }}
   <figure class="comic-panel">
     <img src="{{ $panel.src | relURL }}" alt="{{ $panel.alt }}" loading="eager">
   </figure>
+  {{ end }}
   {{ end }}
 
   {{ with .Params.transcript }}
