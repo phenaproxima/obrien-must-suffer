@@ -9,7 +9,11 @@
   {{ if reflect.IsSlice . }}
   {{ range . }}
   <figure class="comic-panel">
-    <img src="{{ (or .src .) | relURL }}" alt="{{ .alt | default $.Params.alt | default $.Title }}" loading="eager">
+    {{ if reflect.IsMap . }}
+    <img src="{{ .src | relURL }}" alt="{{ .alt | default $.Title }}" loading="eager">
+    {{ else }}
+    <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
+    {{ end }}
   </figure>
   {{ end }}
   {{ else }}
