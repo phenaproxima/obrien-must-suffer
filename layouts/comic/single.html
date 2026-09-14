@@ -10,8 +10,14 @@
   {{ $singlePanel := eq (len .) 1 }}
   {{ range . }}
   <figure class="comic-panel">
-    {{ if reflect.IsMap . }}
-    <img src="{{ .src | relURL }}" alt="{{- if .alt -}}{{ .alt }}{{- else if $singlePanel -}}{{ $.Params.alt | default $.Title }}{{- end -}}" loading="eager">
+    {{ if $singlePanel }}
+      {{ if reflect.IsMap . }}
+    <img src="{{ .src | relURL }}" alt="{{ .alt | default $.Params.alt | default $.Title }}" loading="eager">
+      {{ else }}
+    <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
+      {{ end }}
+    {{ else if reflect.IsMap . }}
+    <img src="{{ .src | relURL }}" alt="{{ .alt }}" loading="eager">
     {{ else }}
     <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
     {{ end }}
