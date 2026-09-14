@@ -6,9 +6,15 @@
   </header>
 
   {{ with .Params.image }}
+  {{ if reflect.IsSlice . }}
   {{ range . }}
   <figure class="comic-panel">
     <img src="{{ (or .src .) | relURL }}" alt="{{ .alt | default $.Params.alt | default $.Title }}" loading="eager">
+  </figure>
+  {{ end }}
+  {{ else }}
+  <figure class="comic-panel">
+    <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
   </figure>
   {{ end }}
   {{ end }}
