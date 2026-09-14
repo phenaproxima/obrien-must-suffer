@@ -10,15 +10,15 @@
   {{ range . }}
   <figure class="comic-panel">
     {{ if reflect.IsMap . }}
-    <img src="{{ .src | relURL }}" alt="{{ .alt | default $.Params.alt | default $.Title }}" loading="eager">
+    <img src="{{ .src | relURL }}" alt="{{ or .alt $.Params.alt "" }}" loading="eager">
     {{ else }}
-    <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
+    <img src="{{ . | relURL }}" alt="{{ or $.Params.alt "" }}" loading="eager">
     {{ end }}
   </figure>
   {{ end }}
   {{ else }}
   <figure class="comic-panel">
-    <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
+    <img src="{{ . | relURL }}" alt="{{ or $.Params.alt "" }}" loading="eager">
   </figure>
   {{ end }}
   {{ end }}
