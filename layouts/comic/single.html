@@ -6,26 +6,9 @@
   </header>
 
   {{ with .Params.image }}
-  {{ if reflect.IsSlice . }}
-  {{ $singlePanel := eq (len .) 1 }}
   {{ range . }}
   <figure class="comic-panel">
-    {{ if $singlePanel }}
-      {{ if reflect.IsMap . }}
-    <img src="{{ .src | relURL }}" alt="{{ .alt | default $.Params.alt | default $.Title }}" loading="eager">
-      {{ else }}
-    <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
-      {{ end }}
-    {{ else if reflect.IsMap . }}
     <img src="{{ .src | relURL }}" alt="{{ .alt }}" loading="eager">
-    {{ else }}
-    <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
-    {{ end }}
-  </figure>
-  {{ end }}
-  {{ else }}
-  <figure class="comic-panel">
-    <img src="{{ . | relURL }}" alt="{{ $.Params.alt | default $.Title }}" loading="eager">
   </figure>
   {{ end }}
   {{ end }}
