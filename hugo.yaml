@@ -34,27 +34,6 @@ caches:
   images:
     dir: ':cacheDir/images'
 
-# An output format is a kind of file Hugo can write for a page.
-# This one is called "Fragment". It is just the comic itself, with no header,
-# footer or menu around it. The home page fetches these one at a time as you
-# scroll down. Each comic gets one at /<slug>/fragment.html.
-outputFormats:
-  Fragment:
-    mediaType: text/html
-    baseName: fragment
-    # It's not a whole page, so it shouldn't get treated like one. That keeps
-    # Hugo from adding things like live reload scripts to it.
-    isHTML: false
-    # Don't list it as an "alternate" version of the page in <head>.
-    notAlternative: true
-
-# Which output formats each kind of page gets. Normal pages get the usual HTML
-# page, plus the fragment described above.
-outputs:
-  page:
-    - html
-    - Fragment
-
 # PhotoSwipe (the lightbox) is installed with npm, so its files aren't kept in
 # this repo. Run "npm ci" before building. The mount below makes Hugo serve the
 # few files we need from node_modules at /vendor/photoswipe/.

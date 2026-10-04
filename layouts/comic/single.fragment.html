@@ -1,7 +1,0 @@
-{{/*
-  The "fragment" version of a comic. It's what the home page fetches while
-  scrolling. It holds the comic and the marker for the next older one,
-  and nothing else. No header, footer or menu.
-*/}}
-{{ partial "episode.html" (dict "page" . "feed" true) }}
-{{ partial "feed-sentinel.html" . }}

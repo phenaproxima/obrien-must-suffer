@@ -1,24 +1,38 @@
 {{/*
-  The home page. It shows a feed of full comics, newest first.
-  We only put the newest comic on the page ourselves. Every older one is
-  loaded by static/js/comic.js as the reader scrolls down.
+  The home page. It lists every comic as a link, newest first, ten per page.
 */}}
 {{ define "main" }}
 <section class="post">
-  {{/* Anything written in content/_index.md shows up here, above the comics. */}}
-  {{ with .Content }}<div class="post-content">{{ . }}</div>{{ end }}
+  <header class="post-header">
+    <h1 class="post-title">{{ .Site.Title }}</h1>
+  </header>
+
+  {{/* Anything written in content/_index.md shows up here, above the list. */}}
+  {{ with .Content }}
+    <div class="post-content">{{ . }}</div>
+  {{ end }}
 
   {{/* All comics, with the most recent one first. */}}
   {{ $comics := (where .Site.RegularPages "Type" "comic").ByDate.Reverse }}
   {{ if gt (len $comics) 0 }}
-    {{/* The script looks for this id, and adds new comics inside it. */}}
-    <div id="comic-feed">
-      {{ $latest := index $comics 0 }}
-      {{ partial "episode.html" (dict "page" $latest "feed" true) }}
-      {{/* The marker that points to the next older comic. */}}
-      {{ partial "feed-sentinel.html" $latest }}
-    </div>
-    {{ partial "comic-assets.html" . }}
+    {{ $paginator := .Paginate $comics 10 }}
+    <ol>
+      {{ range $paginator.Pages }}
+        <li>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          <small>({{ .Date.Format "2006-01-02" }})</small>
+        </li>
+      {{ end }}
+    </ol>
+
+    <nav class="comic-nav">
+      {{ if $paginator.HasPrev }}
+        <a href="{{ $paginator.Prev.URL }}" rel="prev">← Newer page</a>
+      {{ end }}
+      {{ if $paginator.HasNext }}
+        <a href="{{ $paginator.Next.URL }}" rel="next">Older page →</a>
+      {{ end }}
+    </nav>
   {{ else }}
     <p>No comics yet. Check back soon.</p>
   {{ end }}
