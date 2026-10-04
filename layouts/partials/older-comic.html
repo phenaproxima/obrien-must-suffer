@@ -1,0 +1,9 @@
+{{- $pages := (where site.RegularPages "Type" "comic").ByDate.Reverse -}}
+{{- $current := . -}}
+{{- $older := false -}}
+{{- range $i, $p := $pages -}}
+  {{- if and (eq $p.RelPermalink $current.RelPermalink) (lt (add $i 1) (len $pages)) -}}
+    {{- $older = index $pages (add $i 1) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $older -}}

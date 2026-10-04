@@ -1,0 +1,38 @@
+{{ $page := .page }}
+<article class="post comic-page" data-episode>
+  <header class="post-header">
+    {{ if .feed }}
+    <h2 class="post-title"><a href="{{ $page.RelPermalink }}">{{ $page.Title }}</a></h2>
+    {{ else }}
+    <h1 class="post-title">{{ $page.Title }}</h1>
+    {{ end }}
+    <div class="post-meta">{{ $page.Date.Format "January 2, 2006" }}</div>
+  </header>
+
+  <div class="comic-gallery">
+  {{ range $page.Params.image }}
+    {{ $alt := .alt }}
+    {{ $src := .src }}
+    {{ $img := site.Home.Resources.GetMatch (strings.TrimPrefix "/" $src) }}
+    {{ if $img }}
+      {{ $view := $img.Resize "1000x webp" }}
+      <figure class="comic-panel">
+        <a href="{{ $img.RelPermalink }}" data-pswp-width="{{ $img.Width }}" data-pswp-height="{{ $img.Height }}" target="_blank">
+          <img src="{{ $view.RelPermalink }}" width="{{ $view.Width }}" height="{{ $view.Height }}" alt="{{ $alt }}" loading="lazy">
+        </a>
+      </figure>
+    {{ else }}
+      <figure class="comic-panel">
+        <img src="{{ $src | relURL }}" alt="{{ $alt }}" loading="lazy">
+      </figure>
+    {{ end }}
+  {{ end }}
+  </div>
+
+  {{ with $page.Params.transcript }}
+  <details class="comic-transcript">
+    <summary>Transcript</summary>
+    <div>{{ . | markdownify }}</div>
+  </details>
+  {{ end }}
+</article>

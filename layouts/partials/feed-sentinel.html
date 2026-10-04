@@ -1,0 +1,5 @@
+{{ with partial "older-comic.html" . }}
+<div class="comic-sentinel" data-next="{{ .RelPermalink }}fragment.html">
+  <nav class="comic-nav"><a href="{{ .RelPermalink }}" rel="next">Older comic →</a></nav>
+</div>
+{{ end }}

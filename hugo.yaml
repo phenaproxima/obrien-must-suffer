@@ -14,3 +14,15 @@ permalinks:
 caches:
   images:
     dir: ':cacheDir/images'
+
+outputFormats:
+  Fragment:
+    mediaType: text/html
+    baseName: fragment
+    isHTML: false
+    notAlternative: true
+
+outputs:
+  page:
+    - html
+    - Fragment

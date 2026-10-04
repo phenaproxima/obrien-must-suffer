@@ -1,45 +1,19 @@
 {{ define "main" }}
+{{ partial "episode.html" (dict "page" . "feed" false) }}
 <article class="post comic-page">
-  <header class="post-header">
-    <h1 class="post-title">{{ .Title }}</h1>
-    <div class="post-meta">{{ .Date.Format "January 2, 2006" }}</div>
-  </header>
-
-  {{ range .Params.image }}
-  <figure class="comic-panel">
-    <img src="{{ .src | relURL }}" alt="{{ .alt }}" loading="eager">
-  </figure>
-  {{ end }}
-
-  {{ with .Params.transcript }}
-  <details class="comic-transcript">
-    <summary>Transcript</summary>
-    <div>{{ . | markdownify }}</div>
-  </details>
-  {{ end }}
-
+  {{ $newer := false }}
   {{ $pages := (where .Site.RegularPages "Type" "comic").ByDate.Reverse }}
   {{ $current := . }}
-  {{ $newer := false }}
-  {{ $older := false }}
-  {{ range $i, $page := $pages }}
-    {{ if eq $page.RelPermalink $current.RelPermalink }}
-      {{ if gt $i 0 }}
-        {{ $newer = index $pages (sub $i 1) }}
-      {{ end }}
-      {{ if lt (add $i 1) (len $pages) }}
-        {{ $older = index $pages (add $i 1) }}
-      {{ end }}
+  {{ range $i, $p := $pages }}
+    {{ if and (eq $p.RelPermalink $current.RelPermalink) (gt $i 0) }}
+      {{ $newer = index $pages (sub $i 1) }}
     {{ end }}
   {{ end }}
-
+  {{ $older := partial "older-comic.html" . }}
   <nav class="comic-nav">
-    {{ with $newer }}
-      <a href="{{ .RelPermalink }}" rel="prev">← Newer comic</a>
-    {{ end }}
-    {{ with $older }}
-      <a href="{{ .RelPermalink }}" rel="next">Older comic →</a>
-    {{ end }}
+    {{ with $newer }}<a href="{{ .RelPermalink }}" rel="prev">← Newer comic</a>{{ end }}
+    {{ with $older }}<a href="{{ .RelPermalink }}" rel="next">Older comic →</a>{{ end }}
   </nav>
 </article>
+{{ partial "comic-assets.html" . }}
 {{ end }}
