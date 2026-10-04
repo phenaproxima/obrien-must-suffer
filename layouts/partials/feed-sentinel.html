@@ -1,3 +1,10 @@
+{{/*
+  The marker at the bottom of a comic in the feed. It does two jobs.
+  With JavaScript, the script sees it scroll into view and fetches the page
+  named in data-next. Without JavaScript, the plain link inside is all
+  you get, and it takes you to the older comic. Nothing is shown at all
+  when there are no older comics.
+*/}}
 {{ with partial "older-comic.html" . }}
 <div class="comic-sentinel" data-next="{{ .RelPermalink }}fragment.html">
   <nav class="comic-nav"><a href="{{ .RelPermalink }}" rel="next">Older comic →</a></nav>

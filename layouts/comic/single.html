@@ -1,19 +1,29 @@
+{{/*
+  The page for one comic, at its own address.
+  The comic itself comes from the "episode" partial, which the home page
+  feed uses as well. This file adds the newer and older links below it.
+*/}}
 {{ define "main" }}
 {{ partial "episode.html" (dict "page" . "feed" false) }}
 <article class="post comic-page">
+  {{/* Work out which comic comes just before this one in time. */}}
   {{ $newer := false }}
   {{ $pages := (where .Site.RegularPages "Type" "comic").ByDate.Reverse }}
   {{ $current := . }}
   {{ range $i, $p := $pages }}
+    {{/* The list is newest first, so the newer comic sits one step back. */}}
     {{ if and (eq $p.RelPermalink $current.RelPermalink) (gt $i 0) }}
       {{ $newer = index $pages (sub $i 1) }}
     {{ end }}
   {{ end }}
+  {{/* The older comic is found by a small partial, since the feed needs it too. */}}
   {{ $older := partial "older-comic.html" . }}
+  {{/* Either link can be missing: the first comic has no newer one, and the last has no older one. */}}
   <nav class="comic-nav">
     {{ with $newer }}<a href="{{ .RelPermalink }}" rel="prev">← Newer comic</a>{{ end }}
     {{ with $older }}<a href="{{ .RelPermalink }}" rel="next">Older comic →</a>{{ end }}
   </nav>
 </article>
+{{/* This adds the lightbox so panels can be clicked to enlarge them. */}}
 {{ partial "comic-assets.html" . }}
 {{ end }}

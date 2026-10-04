@@ -1,7 +1,12 @@
+{{/*
+  Finds the comic published just before this one. Gives back false if there
+  isn't one. Call it with the comic page as the context.
+*/}}
 {{- $pages := (where site.RegularPages "Type" "comic").ByDate.Reverse -}}
 {{- $current := . -}}
 {{- $older := false -}}
 {{- range $i, $p := $pages -}}
+  {{/* The list is newest first, so the older comic sits one step ahead. */}}
   {{- if and (eq $p.RelPermalink $current.RelPermalink) (lt (add $i 1) (len $pages)) -}}
     {{- $older = index $pages (add $i 1) -}}
   {{- end -}}
