@@ -54,3 +54,29 @@ outputs:
   page:
     - html
     - Fragment
+
+# PhotoSwipe (the lightbox) is installed with npm, so its files aren't kept in
+# this repo. Run "npm ci" before building. The mount below makes Hugo serve the
+# few files we need from node_modules at /vendor/photoswipe/.
+# Once you list any mounts, Hugo forgets its defaults, so we spell them out too.
+module:
+  mounts:
+    - source: archetypes
+      target: archetypes
+    - source: assets
+      target: assets
+    - source: content
+      target: content
+    - source: data
+      target: data
+    - source: i18n
+      target: i18n
+    - source: layouts
+      target: layouts
+    - source: static
+      target: static
+    - source: node_modules/photoswipe/dist
+      target: static/vendor/photoswipe
+      files:
+        - photoswipe.css
+        - umd/*.min.js
