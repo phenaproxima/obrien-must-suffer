@@ -43,7 +43,7 @@
   </details>
   {{ end }}
 
-  {{/* Work out the neighbours of this comic. The list is newest first, so the newer comic is one step back and the older one is one step ahead. */}}
+  {{/* Find the comics to link to for "Newer comic" and "Older comic" at the bottom of the page. The list is newest first, so the newer comic is one step back and the older one is one step ahead. */}}
   {{ $pages := (where .Site.RegularPages "Type" "comic").ByDate.Reverse }}
   {{ $current := . }}
   {{ $newer := false }}
