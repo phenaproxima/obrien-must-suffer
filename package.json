@@ -1,0 +1,8 @@
+{
+  "name": "obrien-must-suffer",
+  "private": true,
+  "description": "O'Brien Must Suffer! webcomic",
+  "dependencies": {
+    "photoswipe": "^5.4.4"
+  }
+}

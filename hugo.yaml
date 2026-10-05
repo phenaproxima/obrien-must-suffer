@@ -1,16 +1,61 @@
+# This is the main Hugo config file. It sets up the site as a whole.
+
+# The address the site lives at once it is published. Hugo uses it to build
+# full links, like the ones in the sitemap.
 baseURL: 'https://obrienmustsuffer.com/'
+
+# The language of the site.
 locale: en-us
+
+# The name of the site. The theme shows it in the header.
 title: "O'Brien Must Suffer!"
+
+# The look of the site comes from the "paper" theme. It lives in themes/paper
+# and is pulled in as a git submodule. Our own files in layouts/ win over the
+# theme's files, so we can change things without touching the theme.
 theme: paper
+
+# This is a comic, not a blog. We don't need tag pages, category pages, or
+# section list pages, so we turn them off. That means Hugo won't build them.
 disableKinds:
   - taxonomy
   - term
   - section
 
+# Each comic gets a short address made from its slug. A comic with the slug
+# "weyoun-crush" ends up at /weyoun-crush/ instead of /comic/weyoun-crush/.
 permalinks:
   comic: '/:slug/'
 
+# Hugo caches resized images so it doesn't redo the work on every build.
+# This puts the cache in a spot the GitHub workflow can save and reuse.
 # See https://gohugo.io/host-and-deploy/host-on-github-pages
 caches:
   images:
     dir: ':cacheDir/images'
+
+# PhotoSwipe (the lightbox) is installed with npm, so its files aren't kept in
+# this repo. Run "npm ci" before building. The mount below makes Hugo serve the
+# few files we need from node_modules at /vendor/photoswipe/.
+# Once you list any mounts, Hugo forgets its defaults, so we spell them out too.
+module:
+  mounts:
+    - source: archetypes
+      target: archetypes
+    - source: assets
+      target: assets
+    - source: content
+      target: content
+    - source: data
+      target: data
+    - source: i18n
+      target: i18n
+    - source: layouts
+      target: layouts
+    - source: static
+      target: static
+    - source: node_modules/photoswipe/dist
+      target: static/vendor/photoswipe
+      files:
+        - photoswipe.css
+        - umd/*.min.js

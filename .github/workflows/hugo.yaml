@@ -50,10 +50,10 @@ jobs:
           cache: false
 
       - name: Install Node.js
-        if: hashFiles('package-lock.json') != ''
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
       - name: Install Dart Sass
         run: |
@@ -99,10 +99,8 @@ jobs:
 
       - name: Install Node.js dependencies
         run: |
-          if [[ -f package-lock.json ]]; then
-            echo "Installing Node.js dependencies..."
-            npm ci
-          fi
+          echo "Installing Node.js dependencies..."
+          npm ci
 
       - name: Cache restore
         id: cache-restore

@@ -1,3 +1,7 @@
+{{/*
+  The page for one comic, at its own address.
+  It shows the panels, the transcript, and links to the newer and older comics.
+*/}}
 {{ define "main" }}
 <article class="post comic-page">
   <header class="post-header">
@@ -5,12 +9,33 @@
     <div class="post-meta">{{ .Date.Format "January 2, 2006" }}</div>
   </header>
 
+  {{/* The lightbox treats everything in here as one gallery, so you can only flip between panels of this comic. */}}
+  <div class="comic-gallery">
   {{ range .Params.image }}
-  <figure class="comic-panel">
-    <img src="{{ .src | relURL }}" alt="{{ .alt }}" loading="eager">
-  </figure>
+    {{ $alt := .alt }}
+    {{ $src := .src }}
+    {{/* The image files sit next to the home page content, so look for them there. */}}
+    {{ $img := site.Home.Resources.GetMatch (strings.TrimPrefix "/" $src) }}
+    {{ if $img }}
+      {{/* Show a smaller copy on the page so it loads fast. */}}
+      {{ $view := $img.Resize "1000x webp" }}
+      <figure class="comic-panel">
+        {{/* The link points to the full size original. The lightbox opens it, and needs the true width and height up front to lay it out. */}}
+        <a href="{{ $img.RelPermalink }}" data-pswp-width="{{ $img.Width }}" data-pswp-height="{{ $img.Height }}" target="_blank">
+          {{/* Width and height here stop the page from jumping around as images load. */}}
+          <img src="{{ $view.RelPermalink }}" width="{{ $view.Width }}" height="{{ $view.Height }}" alt="{{ $alt }}" loading="eager">
+        </a>
+      </figure>
+    {{ else }}
+      {{/* Image not found as a Hugo resource (say, a file in static/). Show it as it is, with no lightbox. */}}
+      <figure class="comic-panel">
+        <img src="{{ $src | relURL }}" alt="{{ $alt }}" loading="eager">
+      </figure>
+    {{ end }}
   {{ end }}
+  </div>
 
+  {{/* The transcript is optional. It's tucked away until the reader opens it. */}}
   {{ with .Params.transcript }}
   <details class="comic-transcript">
     <summary>Transcript</summary>
@@ -18,6 +43,7 @@
   </details>
   {{ end }}
 
+  {{/* Find the comics to link to for "Newer comic" and "Older comic" at the bottom of the page. The list is newest first, so the newer comic is one step back and the older one is one step ahead. */}}
   {{ $pages := (where .Site.RegularPages "Type" "comic").ByDate.Reverse }}
   {{ $current := . }}
   {{ $newer := false }}
@@ -33,6 +59,7 @@
     {{ end }}
   {{ end }}
 
+  {{/* Either link can be missing: the first comic has no newer one, and the last has no older one. */}}
   <nav class="comic-nav">
     {{ with $newer }}
       <a href="{{ .RelPermalink }}" rel="prev">← Newer comic</a>
@@ -42,4 +69,6 @@
     {{ end }}
   </nav>
 </article>
+{{/* This adds the lightbox so panels can be clicked to enlarge them. */}}
+{{ partial "comic-assets.html" . }}
 {{ end }}

@@ -1,0 +1,10 @@
+{{/*
+  Loads the lightbox (PhotoSwipe) and the small script that starts it. The PhotoSwipe files
+  come from node_modules (see the mounts in hugo.yaml), so nothing comes from a CDN.
+*/}}
+<link rel="stylesheet" href="{{ "vendor/photoswipe/photoswipe.css" | relURL }}">
+{{/* Fixes a clash between the theme and PhotoSwipe. See the file for details. */}}
+<link rel="stylesheet" href="{{ "css/lightbox.css" | relURL }}">
+<script src="{{ "vendor/photoswipe/umd/photoswipe.umd.min.js" | relURL }}"></script>
+<script src="{{ "vendor/photoswipe/umd/photoswipe-lightbox.umd.min.js" | relURL }}"></script>
+<script src="{{ "js/comic.js" | relURL }}"></script>

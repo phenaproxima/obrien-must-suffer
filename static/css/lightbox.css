@@ -1,0 +1,9 @@
+/*
+  The paper theme sets "max-width: 100%" on every image, and it does so with
+  a very strong selector. PhotoSwipe's own slide image needs "max-width: none"
+  so it can size itself. Without this fix the image ends up 0 pixels wide,
+  and the lightbox opens empty. That's why this needs !important.
+*/
+.pswp .pswp__img {
+  max-width: none !important;
+}
